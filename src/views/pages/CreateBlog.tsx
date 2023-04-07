@@ -1,20 +1,39 @@
 import { Box, Button, TextField } from "@mui/material";
 import "./CreateBlog.css";
 import NavBar from "../components/NavBar";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useBlogStore } from "../../store/store";
 
 function CreateBlog() {
+  const { id } = useParams();
   const [data, setData] = useState({ title: "", description: "" });
   const navigate = useNavigate();
-  const blogs = useBlogStore((state: any) => state.blogs);
+  const selectedBlog = useBlogStore((state: any) => state.selectedBlog);
   const createBlog = useBlogStore((state: any) => state.createBlog);
   const setSaveData = useBlogStore((state: any) => state.setSaveData);
   const saveData = useBlogStore((state: any) => state.saveData);
+  const editBlog = useBlogStore((state: any) => state.editBlog);
+  const getBlogById = useBlogStore((state: any) => state.getBlogById);
+  console.log(selectedBlog);
 
+  const getData = useCallback(() => {
+    id !== undefined && getBlogById(id);
+    setData({
+      ...data,
+      title: selectedBlog[0]?.title,
+      description: selectedBlog[0]?.description,
+    });
+    console.log("after refresh", data);
+  }, []);
+
+  useEffect(() => {
+    getData();
+  }, [getData]);
   const handleSubmit = () => {
-    createBlog(data.title, data.description);
+    id === undefined
+      ? createBlog(data.title, data.description)
+      : editBlog(id, data.title, data.description);
     if (!saveData) {
       navigate("/");
       setSaveData(saveData);
@@ -71,7 +90,9 @@ function CreateBlog() {
           >
             Cancel
           </Button>
-          <Button onClick={handleSubmit}>Submit</Button>
+          <Button onClick={handleSubmit}>
+            {id === undefined ? "Submit" : "Update"}
+          </Button>
         </Box>
       </Box>
     </Box>

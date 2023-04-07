@@ -36,6 +36,21 @@ app.get("/", async (req, res) => {
   }
 });
 
+app.get("/:id", async (req, res) => {
+  try {
+    const ads = await Blog.find({ _id: req.params.id });
+
+    res.status(200).json({
+      success: true,
+      count: ads.length,
+      data: ads,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "server error" });
+  }
+});
+
 app.post("/create", (req, res) => {
   console.log("body", req.body);
   const myData = new Blog(req.body);

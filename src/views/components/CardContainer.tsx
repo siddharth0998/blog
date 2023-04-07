@@ -7,16 +7,22 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useBlogStore } from "../../store/store";
 
 export default function CardContainer() {
+  const navigate = useNavigate();
   const blogs = useBlogStore((state: any) => state.blogs);
   const getBlog = useBlogStore((state: any) => state.getBlog);
   const deleteBlog = useBlogStore((state: any) => state.deleteBlog);
+
   useEffect(() => {
     getBlog();
-  }, [getBlog, blogs]);
+  }, [getBlog]);
 
+  const handleEdit = (id: string) => {
+    navigate(`./createblog/${id}`);
+  };
   const handleDelete = (id: any) => {
     deleteBlog(id);
   };
@@ -38,7 +44,9 @@ export default function CardContainer() {
             <Typography variant="body2">{data.description}</Typography>
           </CardContent>
           <CardActions>
-            <Button size="small">Edit</Button>
+            <Button size="small" onClick={() => handleEdit(data._id)}>
+              Edit
+            </Button>
             <Button size="small" onClick={() => handleDelete(data._id)}>
               Delete
             </Button>

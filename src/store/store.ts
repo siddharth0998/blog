@@ -1,8 +1,10 @@
 import axios from "axios";
+import React from "react";
 import { create } from "zustand";
 
 const useStore = create((set) => ({
   blogs: [],
+  selectedBlog: [],
   saveData: false,
   setSaveData: async (flag: boolean) => {
     set({ saveData: flag });
@@ -10,6 +12,10 @@ const useStore = create((set) => ({
   getBlog: async () => {
     const data = await axios.get("http://localhost:4001");
     set({ blogs: data.data.data });
+  },
+  getBlogById: async (id: string) => {
+    const data = await axios.get(`http://localhost:4001/${id}`);
+    set({ selectedBlog: data.data.data });
   },
   deleteBlog: async (id: any) => {
     const data = await axios.delete(`http://localhost:4001/delete/${id}`);
@@ -23,6 +29,13 @@ const useStore = create((set) => ({
     if (data.status === 200) {
       set({ blogs: data.data.data });
     }
+  },
+  editBlog: async (id: string, title: string, description: string) => {
+    const data = await axios.put(`http://localhost:4001/update/${id}`, {
+      title,
+      description,
+    });
+    if (data.status === 200) set({ blogs: data.data.data });
   },
 }));
 
